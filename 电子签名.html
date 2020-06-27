@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body{
+           margin: 0;
+           padding: 0;
+        }
+        .warp{
+            width: 800px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        .box{
+            float: left;
+            width: 300px;
+            height: 400px;
+        }
+        h3{
+            text-align: center;
+        }
+        #canvas{
+            background: #ece6e6;
+        }
+        .operation{
+             margin-top: 10px;
+             overflow: auto;
+        }
+        .keep{
+           
+            float: left;
+            width: 40px;
+            height: 24px;
+            text-align: center;
+            padding:5px  10px;
+            line-height: 24px;
+            background: skyblue;
+            cursor: pointer;
+        }
+        .clear{
+            float: right;
+            width: 40px;
+            height: 24px;
+            text-align: center;
+            padding:5px  10px;
+            line-height: 24px;
+            background: red;
+            color: white;
+            cursor: pointer;
+        }
+        .img-box{
+            float: left;
+            width: 300px;
+            height:350px;
+            border: 1px solid pink;
+            margin-top: 40px;
+            margin-left: 20px;
+            text-align: center;
+        }
+        img{
+            display: block;
+            width: 100%;
+        }
+        .brush{
+            float:left;
+            margin:6px 10px 0px 10px;
+            
+        }
+        .brush input{
+            width: 40px;
+            outline: none;
+            padding: 0 10px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="warp">
+        <div class="box">
+            <h3>电子签名</h3>
+                <canvas id='canvas' width="300" height="300">浏览器版本比较低，不显示</canvas>
+                <div class='operation'>
+                    <div class="keep">保存</div>
+                    <div class="brush">
+                        画笔大小：
+                        <input class="size" type="text" placeholder="画笔大小" value="4">
+                    </div>
+                    <div class="clear">清除</div>
+                </div>
+                <div class='color-box'>
+                    颜色：
+                    <input type="color" placeholder="画笔颜色" class='color' >
+                    <!-- <select>
+                        <option value='pink'>pink</option>
+                        <option value='orange'>orange</option>
+                        <option value='yellow'>yellow</option>
+                        <option value='blue'>blue</option>
+                        <option value='purple'>purple</option>
+                        <option value='skyblue'>skyblue</option>
+                    </select> -->
+                </div>
+            
+                
+        </div>
+        
+        <div class="img-box">
+            <div>电子图片</div>
+            <div class="img">
+                <img id="tempImage" src="" style="display: none;" alt="临时图片文件" />
+
+            </div>
+
+        </div>
+        
+
+    </div>
+    <script>
+        var canvas = document.querySelector("#canvas");
+
+        var ctx = canvas.getContext('2d');
+        
+        var paint = false; 
+        
+        canvas.onmousedown =function(e){
+           paint = true;
+           x = e.clientX - canvas.offsetLeft;
+           y = e.clientY - canvas.offsetTop;
+
+            console.log("按下",e.pageX);
+            canvas.onmousemove = function (e){
+                if(paint){
+                    x1 =e.clientX - canvas.offsetLeft;
+                    y1 =e.clientY - canvas.offsetTop
+                   console.log('移动',x1);
+                   autograph(x,y,x1,y1,size,color,ctx);
+                }
+                x = x1;
+                y = y1;
+            }
+            
+        }
+        canvas.onmouseup =function (e){
+            canvas.onmousemove = null;
+        }
+
+        function autograph(x,y,x1,y1,size, color,ctx){
+            ctx.beginPath();
+            ctx.lineWidth =size;
+            ctx.strokeStyle =color;
+            ctx.moveTo(x,y);
+            ctx.lineTo(x1,y1);
+            // ctx.closePath();
+            ctx.stroke();
+            
+        }
+
+        // 画笔大小
+        var size = document.querySelector('.size');
+        size.oninput =function(){
+            size =this.value;
+            console.log(size);
+        }
+
+        //画笔颜色
+        // var select = document.querySelector('select');
+        // select.onchange = function(){
+        //     color =this.value || skyblue;
+        //     console.log(color);
+        // }
+
+        var color =document.querySelector('.color');
+        color.oninput =function(){
+            color = this.value ;
+        }
+
+        //清除整个画布
+        var clear =document.querySelector(".clear");
+
+        clear.onclick=function(){ 
+            ctx.clearRect(0,0,300,300);
+        }
+
+        //保存 直接转base64
+        var keep =document.querySelector(".keep");
+        keep.addEventListener("click",function(){
+            
+            var img = document.querySelector("#tempImage");
+            //图片路径
+            imgBase64 = canvas.toDataURL('image/png');
+            img.src=imgBase64;
+            img.style.display = 'block';
+            console.log(imgBase64)
+        })
+        
+    </script>
+</body>
+</html>
